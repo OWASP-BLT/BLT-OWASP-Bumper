@@ -465,6 +465,36 @@ def generate_html(repos: List[Dict], org: str) -> str:
             return date.toLocaleDateString('en-US', {{ year: 'numeric', month: 'short', day: 'numeric' }});
         }}
         
+        function getTimeAgo(dateStr) {{
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSeconds = Math.floor(diffMs / 1000);
+            const diffMinutes = Math.floor(diffSeconds / 60);
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffDays = Math.floor(diffHours / 24);
+            const diffWeeks = Math.floor(diffDays / 7);
+            const diffMonths = Math.floor(diffDays / 30);
+            const diffYears = Math.floor(diffDays / 365);
+            
+            if (diffYears > 0) {{
+                return diffYears === 1 ? '1 year ago' : `${{diffYears}} years ago`;
+            }} else if (diffMonths > 0) {{
+                return diffMonths === 1 ? '1 month ago' : `${{diffMonths}} months ago`;
+            }} else if (diffWeeks > 0) {{
+                return diffWeeks === 1 ? '1 week ago' : `${{diffWeeks}} weeks ago`;
+            }} else if (diffDays > 0) {{
+                return diffDays === 1 ? '1 day ago' : `${{diffDays}} days ago`;
+            }} else if (diffHours > 0) {{
+                return diffHours === 1 ? '1 hour ago' : `${{diffHours}} hours ago`;
+            }} else if (diffMinutes > 0) {{
+                return diffMinutes === 1 ? '1 minute ago' : `${{diffMinutes}} minutes ago`;
+            }} else {{
+                return 'just now';
+            }}
+        }}
+        
         function getYearsSinceUpdate(dateStr) {{
             if (!dateStr) return 0;
             const lastUpdate = new Date(dateStr);
@@ -625,7 +655,7 @@ Thank you for contributing to the OWASP community!
                             <span class="meta-item">⭐ ${{repo.stargazers_count}} stars</span>
                             <span class="meta-item">🔱 ${{repo.forks_count}} forks</span>
                             <span class="meta-item">📝 ${{repo.open_issues_count}} issues</span>
-                            <span class="meta-item">📅 Updated: ${{formatDate(repo.updated_at)}}</span>
+                            <span class="meta-item">📅 Updated: ${{formatDate(repo.updated_at)}} (${{getTimeAgo(repo.updated_at)}})</span>
                         </div>
                     </div>
                 `;
