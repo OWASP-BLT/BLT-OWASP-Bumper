@@ -286,6 +286,16 @@ def generate_html(repos: List[Dict], org: str) -> str:
             color: #666;
         }}
         
+        .badge.inactive-1yr {{
+            background: #fff3e0;
+            color: #e65100;
+        }}
+        
+        .badge.inactive-3yr {{
+            background: #ffccbc;
+            color: #bf360c;
+        }}
+        
         .bump-btn {{
             padding: 6px 12px;
             background: #ff9800;
@@ -392,7 +402,7 @@ def generate_html(repos: List[Dict], org: str) -> str:
 <body>
     <div class="container">
         <h1>{org} Repositories</h1>
-        <div class="subtitle">Comprehensive listing of all GitHub repositories</div>
+        <div class="subtitle">Comprehensive listing of all GitHub repositories | <a href="https://github.com/OWASP-BLT/OWASP-Bumper" target="_blank" style="color: #3498db;">View on GitHub</a></div>
         
         <div class="controls">
             <div class="search-box">
@@ -453,6 +463,15 @@ def generate_html(repos: List[Dict], org: str) -> str:
             if (!dateStr) return 'N/A';
             const date = new Date(dateStr);
             return date.toLocaleDateString('en-US', {{ year: 'numeric', month: 'short', day: 'numeric' }});
+        }}
+        
+        function getYearsSinceUpdate(dateStr) {{
+            if (!dateStr) return 0;
+            const lastUpdate = new Date(dateStr);
+            const now = new Date();
+            const diffTime = now - lastUpdate;
+            const diffYears = diffTime / (1000 * 60 * 60 * 24 * 365.25);
+            return diffYears;
         }}
         
         function getBumpIssueUrl(repo) {{
@@ -560,6 +579,7 @@ Thank you for contributing to the OWASP community!
             
             container.innerHTML = filtered.map(repo => {{
                 const badges = [];
+                const yearsSinceUpdate = getYearsSinceUpdate(repo.updated_at);
                 
                 if (repo.is_project) {{
                     badges.push('<span class="badge project">Project</span>');
@@ -574,9 +594,20 @@ Thank you for contributing to the OWASP community!
                     badges.push(`<span class="badge language">${{repo.language}}</span>`);
                 }}
                 
-                const bumpButton = repo.archived 
-                    ? `<span class="bump-btn archived" title="Cannot bump archived repositories">🔔 Bump</span>`
-                    : `<a href="${{getBumpIssueUrl(repo)}}" target="_blank" class="bump-btn" title="Create a reminder issue in this repository">🔔 Bump</a>`;
+                // Add activity indicator badges
+                if (yearsSinceUpdate >= 3) {{
+                    badges.push('<span class="badge inactive-3yr" title="No activity in 3+ years">3+ Years Inactive</span>');
+                }} else if (yearsSinceUpdate >= 1) {{
+                    badges.push('<span class="badge inactive-1yr" title="No activity in 1+ year">1+ Year Inactive</span>');
+                }}
+                
+                // Only show bump button for repos not updated in over 1 year (and not archived)
+                let bumpButton = '';
+                if (yearsSinceUpdate >= 1) {{
+                    bumpButton = repo.archived 
+                        ? `<span class="bump-btn archived" title="Cannot bump archived repositories">🔔 Bump</span>`
+                        : `<a href="${{getBumpIssueUrl(repo)}}" target="_blank" class="bump-btn" title="Create a reminder issue in this repository">🔔 Bump</a>`;
+                }}
                 
                 return `
                     <div class="repo-item ${{repo.archived ? 'archived' : ''}}">
