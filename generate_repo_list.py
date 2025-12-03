@@ -100,6 +100,8 @@ def generate_html(repos: List[Dict], org: str) -> str:
     # Prepare repository data as JSON for JavaScript
     repo_data = []
     for repo in repos:
+        sparkline = repo.get("sparkline", [])
+        activity_score = sum(sparkline) if sparkline else 0
         repo_data.append({
             "name": repo.get("name", ""),
             "full_name": repo.get("full_name", ""),
@@ -114,7 +116,8 @@ def generate_html(repos: List[Dict], org: str) -> str:
             "archived": repo.get("archived", False),
             "is_project": "www-project" in repo.get("name", "").lower(),
             "is_chapter": "www-chapter" in repo.get("name", "").lower(),
-            "sparkline": repo.get("sparkline", [])
+            "sparkline": sparkline,
+            "activity_score": activity_score
         })
     
     html = f"""<!DOCTYPE html>
@@ -492,6 +495,21 @@ def generate_html(repos: List[Dict], org: str) -> str:
             fill: rgba(149, 165, 166, 0.1);
         }}
         
+        .activity-score {{
+            font-size: 12px;
+            font-weight: 600;
+            color: #2980b9;
+            background: #e3f2fd;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }}
+        
+        .repo-item.archived .activity-score {{
+            color: #7f8c8d;
+            background: #f0f0f0;
+        }}
+        
         .no-results {{
             text-align: center;
             padding: 60px 20px;
@@ -588,6 +606,8 @@ def generate_html(repos: List[Dict], org: str) -> str:
             <button class="sort-btn" data-sort="stars-asc">Stars ↑</button>
             <button class="sort-btn" data-sort="forks-desc">Forks ↓</button>
             <button class="sort-btn" data-sort="forks-asc">Forks ↑</button>
+            <button class="sort-btn" data-sort="activity-desc">Activity ↓</button>
+            <button class="sort-btn" data-sort="activity-asc">Activity ↑</button>
             <button class="sort-btn" data-sort="created-desc">Created ↓</button>
             <button class="sort-btn" data-sort="created-asc">Created ↑</button>
         </div>
@@ -806,6 +826,12 @@ Thank you for contributing to the OWASP community!
                 case 'forks-asc':
                     sorted.sort((a, b) => a.forks_count - b.forks_count);
                     break;
+                case 'activity-desc':
+                    sorted.sort((a, b) => b.activity_score - a.activity_score);
+                    break;
+                case 'activity-asc':
+                    sorted.sort((a, b) => a.activity_score - b.activity_score);
+                    break;
             }}
             
             return sorted;
@@ -915,6 +941,7 @@ Thank you for contributing to the OWASP community!
                         <div class="sparkline-container">
                             <span class="sparkline-label">📈 Activity (52 weeks):</span>
                             ${{sparklineHtml}}
+                            <span class="activity-score" title="Total commits in the last 52 weeks">Score: ${{repo.activity_score}}</span>
                         </div>
                     </div>
                 `;
