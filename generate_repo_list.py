@@ -542,6 +542,20 @@ def generate_html(repos: List[Dict], org: str) -> str:
             .sort-buttons {{
                 justify-content: center;
             }}
+            
+            .repo-header {{
+                flex-direction: column;
+                align-items: flex-start;
+            }}
+            
+            .repo-name {{
+                width: 100%;
+                margin-bottom: 8px;
+            }}
+            
+            .repo-badges {{
+                width: 100%;
+            }}
         }}
     </style>
 </head>

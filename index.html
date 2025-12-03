@@ -221,10 +221,12 @@
             align-items: flex-start;
             margin-bottom: 10px;
             gap: 15px;
+            flex-wrap: wrap;
         }
         
         .repo-name {
             flex: 1;
+            min-width: 150px;
         }
         
         .repo-name a {
@@ -232,7 +234,8 @@
             text-decoration: none;
             font-size: 18px;
             font-weight: 600;
-            word-break: break-word;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
         }
         
         .repo-name a:hover {
@@ -244,6 +247,7 @@
             gap: 8px;
             flex-wrap: wrap;
             align-items: center;
+            flex-shrink: 1;
         }
         
         .badge {
@@ -422,6 +426,61 @@
             
             .sort-buttons {
                 justify-content: center;
+            }
+            
+            .repo-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .repo-name {
+                width: 100%;
+                min-width: 0;
+                max-width: 100%;
+                margin-bottom: 0;
+                overflow: hidden;
+                flex: none;
+            }
+            
+            .repo-name a {
+                word-break: break-word;
+                overflow-wrap: break-word;
+                hyphens: auto;
+                display: block;
+                max-width: 100%;
+                white-space: normal;
+            }
+            
+            .repo-badges {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+            
+            .repo-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .meta-item::before {
+                content: "";
+            }
+            
+            .sparkline-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .stat {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
