@@ -820,6 +820,7 @@ def generate_html(repos: List[Dict], org: str) -> str:
             
             .repo-badges {{
                 width: 100%;
+                max-width: 100%;
                 flex-wrap: wrap;
             }}
             
@@ -857,10 +858,6 @@ def generate_html(repos: List[Dict], org: str) -> str:
                 width: 100%;
                 text-align: center;
                 box-sizing: border-box;
-            }}
-            
-            .repo-badges {{
-                max-width: 100%;
             }}
             
             .badge {{
